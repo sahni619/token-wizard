@@ -3,7 +3,9 @@ import '../../assets/stylesheets/application.css'
 import { Link } from 'react-router-dom'
 import { StepNavigation } from '../Common/StepNavigation'
 import { inject, observer } from 'mobx-react'
+import { Loader } from '../Common/Loader'
 import { ButtonContinue } from '../Common/ButtonContinue'
+import { checkWeb3 } from '../../utils/blockchainHelpers'
 import {
   NAVIGATION_STEPS,
   CROWDSALE_STRATEGIES,
@@ -16,19 +18,35 @@ const logger = logdown('TW:stepOne')
 const { CROWDSALE_STRATEGY } = NAVIGATION_STEPS
 const { MINTED_CAPPED_CROWDSALE, DUTCH_AUCTION } = CROWDSALE_STRATEGIES
 
-@inject('crowdsaleStore', 'contractStore')
+@inject('crowdsaleStore', 'contractStore', 'web3Store')
 @observer
 export class stepOne extends React.Component {
   /**
-   * Function that handle configuration, update our state and prepare for first render
+   * Constructor component, set loading
+   * @param props
    */
-  componentWillMount() {
-    logger.log('CrowdsaleStore strategy', this.props.crowdsaleStore.strategy)
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      loading: true
+    }
+  }
+
+  /**
+   * Function that handle configuration, update our state and prepare for first render
+   * @returns {Promise<void>}
+   */
+  async componentWillMount() {
+    const { web3Store, crowdsaleStore } = this.props
+    await checkWeb3(web3Store.web3)
+    logger.log('CrowdsaleStore strategy', crowdsaleStore.strategy)
 
     // Set default value
-    if (this.props.crowdsaleStore && !this.props.crowdsaleStore.strategy) {
-      this.props.crowdsaleStore.setProperty('strategy', MINTED_CAPPED_CROWDSALE)
+    if (crowdsaleStore && !crowdsaleStore.strategy) {
+      crowdsaleStore.setProperty('strategy', MINTED_CAPPED_CROWDSALE)
     }
+    this.setState({ loading: false })
   }
 
   /**
@@ -92,6 +110,7 @@ export class stepOne extends React.Component {
             <ButtonContinue status={status} />
           </Link>
         </div>
+        <Loader show={this.state.loading} />
       </section>
     )
   }
