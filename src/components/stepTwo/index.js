@@ -37,7 +37,7 @@ export class stepTwo extends Component {
   }
 
   load = async () => {
-    const { tokenStore, crowdsaleStore } = this.props
+    const { tokenStore, crowdsaleStore, reservedTokenStore } = this.props
 
     await sleep(1000)
     if (tokenStore.isEmpty(crowdsaleStore)) {
@@ -47,7 +47,9 @@ export class stepTwo extends Component {
         reload: true
       })
     }
-    return tokenStore.getToken(crowdsaleStore)
+    const token = tokenStore.getToken(crowdsaleStore)
+    reservedTokenStore.applyDecimalsToTokens(token.decimals)
+    return token
   }
 
   removeReservedToken = index => {
