@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { Component } from 'react'
 import '../../assets/stylesheets/application.css'
 import { Link } from 'react-router-dom'
 import { StepNavigation } from '../Common/StepNavigation'
 import { inject, observer } from 'mobx-react'
-import { Loader } from '../Common/Loader'
 import { ButtonContinue } from '../Common/ButtonContinue'
 import { checkWeb3 } from '../../utils/blockchainHelpers'
 import {
@@ -13,6 +12,7 @@ import {
   DOWNLOAD_STATUS
 } from '../../utils/constants'
 import logdown from 'logdown'
+import { Loader } from '../Common/Loader'
 
 const logger = logdown('TW:stepOne')
 const { CROWDSALE_STRATEGY } = NAVIGATION_STEPS
@@ -20,33 +20,28 @@ const { MINTED_CAPPED_CROWDSALE, DUTCH_AUCTION } = CROWDSALE_STRATEGIES
 
 @inject('crowdsaleStore', 'contractStore', 'web3Store')
 @observer
-export class stepOne extends React.Component {
-  /**
-   * Constructor component, set loading
-   * @param props
-   */
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      loading: true
-    }
+export class stepOne extends Component {
+  state = {
+    loading: false,
+    strategy: null
   }
 
-  /**
-   * Function that handle configuration, update our state and prepare for first render
-   * @returns {Promise<void>}
-   */
-  async componentWillMount() {
-    const { web3Store, crowdsaleStore } = this.props
+  async componentDidMount() {
+    const { crowdsaleStore, web3Store } = this.props
     await checkWeb3(web3Store.web3)
+
+    this.setState({ loading: true })
     logger.log('CrowdsaleStore strategy', crowdsaleStore.strategy)
 
     // Set default value
     if (crowdsaleStore && !crowdsaleStore.strategy) {
       crowdsaleStore.setProperty('strategy', MINTED_CAPPED_CROWDSALE)
     }
-    this.setState({ loading: false })
+
+    this.setState({
+      loading: false,
+      strategy: crowdsaleStore.strategy
+    })
   }
 
   /**
@@ -54,8 +49,14 @@ export class stepOne extends React.Component {
    * @param e
    */
   handleChange = e => {
-    this.props.crowdsaleStore.setProperty('strategy', e.currentTarget.value)
-    logger.log('CrowdsaleStore strategy selected:', e.currentTarget.value)
+    const { crowdsaleStore } = this.props
+    const strategy = e.currentTarget.value
+
+    crowdsaleStore.setProperty('strategy', strategy)
+    this.setState({
+      strategy: crowdsaleStore.strategy
+    })
+    logger.log('CrowdsaleStore strategy selected:', strategy)
   }
 
   /**
@@ -65,7 +66,7 @@ export class stepOne extends React.Component {
   render() {
     const { contractStore } = this.props
 
-    let status = contractStore && contractStore.downloadStatus === DOWNLOAD_STATUS.SUCCESS && localStorage.length > 0
+    let status = (contractStore && contractStore.downloadStatus === DOWNLOAD_STATUS.SUCCESS) || localStorage.length > 0
 
     return (
       <section className="steps steps_crowdsale-contract">
@@ -83,7 +84,7 @@ export class stepOne extends React.Component {
                 value={MINTED_CAPPED_CROWDSALE}
                 name="contract-type"
                 type="radio"
-                checked={this.props.crowdsaleStore.strategy === MINTED_CAPPED_CROWDSALE}
+                checked={this.state.strategy === MINTED_CAPPED_CROWDSALE}
                 onChange={this.handleChange}
               />
               <span className="title">{CROWDSALE_STRATEGIES_DISPLAYNAMES.MINTED_CAPPED_CROWDSALE}</span>
@@ -97,7 +98,7 @@ export class stepOne extends React.Component {
                 value={DUTCH_AUCTION}
                 name="contract-type"
                 type="radio"
-                checked={this.props.crowdsaleStore.strategy === DUTCH_AUCTION}
+                checked={this.state.strategy === DUTCH_AUCTION}
                 onChange={this.handleChange}
               />
               <span className="title">{CROWDSALE_STRATEGIES_DISPLAYNAMES.DUTCH_AUCTION}</span>
