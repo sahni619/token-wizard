@@ -12,8 +12,6 @@ import logdown from 'logdown'
 import { sleep, toBigNumber } from '../../utils/utils'
 import setFieldTouched from 'final-form-set-field-touched'
 
-const logger = logdown('TW:stepTwo')
-
 const { TOKEN_SETUP } = NAVIGATION_STEPS
 const { VALID, INVALID } = VALIDATION_TYPES
 
