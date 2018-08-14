@@ -77,6 +77,7 @@ class DeploymentStore {
 
     if (!txStatus) return
 
+    // eslint-disable-next-line array-callback-return
     const toBeUpdated = txStatus.findIndex(isSuccess => {
       if (isSuccess !== null) {
         return !isSuccess

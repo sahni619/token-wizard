@@ -8,9 +8,13 @@ import { NAVIGATION_STEPS, VALIDATION_TYPES } from '../../utils/constants'
 import { inject, observer } from 'mobx-react'
 import { Form } from 'react-final-form'
 import { StepTwoForm } from './StepTwoForm'
+import logdown from 'logdown'
 
 const { TOKEN_SETUP } = NAVIGATION_STEPS
 const { VALID, INVALID } = VALIDATION_TYPES
+
+// eslint-disable-next-line no-unused-vars
+const logger = logdown('TW:stepTwo:index')
 
 @inject('tokenStore', 'crowdsaleStore', 'web3Store', 'reservedTokenStore')
 @observer
