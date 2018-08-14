@@ -17,6 +17,9 @@ const logger = logdown('TW:stepTwo')
 const { TOKEN_SETUP } = NAVIGATION_STEPS
 const { VALID, INVALID } = VALIDATION_TYPES
 
+// eslint-disable-next-line no-unused-vars
+const logger = logdown('TW:stepTwo:index')
+
 @inject('tokenStore', 'crowdsaleStore', 'web3Store', 'reservedTokenStore')
 @observer
 export class stepTwo extends Component {

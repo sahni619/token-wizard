@@ -477,7 +477,7 @@ export class stepFour extends React.Component {
         This deploy was started with account <b>{deploymentStore.deployerAccount}</b> but the current account is{' '}
         <b>{this.context.selectedAccount}</b>. Please select the original account to continue with the deploy. If you
         don't want to continue with that deploy,{' '}
-        <a href="#" onClick={this.cancelDeploy}>
+        <a href="" onClick={this.cancelDeploy}>
           click here
         </a>.
       </div>
